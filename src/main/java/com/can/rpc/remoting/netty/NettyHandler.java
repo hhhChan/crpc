@@ -4,7 +4,11 @@ import com.can.rpc.remoting.Handler;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * @author ccc
+ */
 public class NettyHandler extends ChannelDuplexHandler {
+
     private Handler handler;
 
     public NettyHandler(Handler handler) {

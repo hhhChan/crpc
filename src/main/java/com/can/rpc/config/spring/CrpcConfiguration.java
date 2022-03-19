@@ -1,6 +1,7 @@
 package com.can.rpc.config.spring;
 
 import com.can.rpc.config.ProtocolConfig;
+import com.can.rpc.config.ReferenceConfig;
 import com.can.rpc.config.RegistryConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -12,31 +13,32 @@ import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.reflect.Field;
 
-//将自己创建的对象 放到 spring beandefinition
-public class CRPCConfiguration implements ImportBeanDefinitionRegistrar {
-    StandardEnvironment environment;
+/**
+ * @author ccc
+ */
+public class CrpcConfiguration implements ImportBeanDefinitionRegistrar {
 
-    public CRPCConfiguration(Environment environment) {
-        this.environment = (StandardEnvironment) environment;
+    private StandardEnvironment standardEnvironment;
+
+    public CrpcConfiguration(Environment environment) {
+        this.standardEnvironment = (StandardEnvironment) environment;
     }
 
-    //让spring启动的时候，装置 没有注解的 xml配置
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
-        BeanDefinitionBuilder beanDefinitionBuilder = null;
 
-        //读取配置 复制 crpc.protocol.*
-        beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(ProtocolConfig.class);
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
+                                        BeanNameGenerator importBeanNameGenerator) {
+        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(ProtocolConfig.class);
         for (Field field : ProtocolConfig.class.getDeclaredFields()) {
-            String value = environment.getProperty("crpc.protocol." + field.getName());
+            //从配置中进行读取赋值
+            String value = standardEnvironment.getProperty("crpc.protocol." + field.getName());
             beanDefinitionBuilder.addPropertyValue(field.getName(), value);
         }
         registry.registerBeanDefinition("protocolConfig", beanDefinitionBuilder.getBeanDefinition());
 
-        //读取配置 复制 crpc.registry.*
         beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(RegistryConfig.class);
-        for (Field field : ProtocolConfig.class.getDeclaredFields()) {
-            String value = environment.getProperty("crpc.registry." + field.getName());
+        for (Field field : RegistryConfig.class.getDeclaredFields()) {
+            String value = standardEnvironment.getProperty("crpc.registry." + field.getName());
             beanDefinitionBuilder.addPropertyValue(field.getName(), value);
         }
         registry.registerBeanDefinition("registryConfig", beanDefinitionBuilder.getBeanDefinition());

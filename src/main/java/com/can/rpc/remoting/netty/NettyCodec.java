@@ -9,7 +9,14 @@ import io.netty.channel.ChannelPromise;
 
 import java.util.List;
 
+/**
+ * 这里不做具体的协议
+ * 对于发送端 发送的数据以特定的协议格式进行发送
+ * 接受端  把请求的网络字节数据 转成java对象
+ * @author ccc
+ */
 public class NettyCodec extends ChannelDuplexHandler {
+
     private Codec codec;
 
     public NettyCodec(Codec codec) {
@@ -18,22 +25,20 @@ public class NettyCodec extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        //读数据
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] dataBytes = new byte[buf.readableBytes()];
-        buf.readBytes(dataBytes);
-        //格式转
-        List<Object> out = codec.decode(dataBytes);
-        // 处理器继续处理
+        ByteBuf byteBuf = (ByteBuf) msg;
+        byte[] data = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(data);
+
+        List<Object> out = codec.decode(data);
+
         for (Object o : out) {
             ctx.fireChannelRead(o);
         }
-        System.out.println("内容" + msg);
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        byte[] encode = codec.encode(msg);
-        super.write(ctx, Unpooled.wrappedBuffer(encode), promise);
+        byte[] message = codec.encode(msg);
+        super.write(ctx, Unpooled.wrappedBuffer(message), promise);
     }
 }

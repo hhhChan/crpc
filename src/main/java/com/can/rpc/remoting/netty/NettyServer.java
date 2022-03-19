@@ -10,34 +10,35 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
 import java.net.InetSocketAddress;
 import java.net.URI;
 
+/**
+ * @author ccc
+ */
 public class NettyServer implements Server {
-    EventLoopGroup boss = new NioEventLoopGroup();
-    EventLoopGroup worker = new NioEventLoopGroup();
+
+    private EventLoopGroup boss = new NioEventLoopGroup(1);
+    private EventLoopGroup workers = new NioEventLoopGroup(Math.min(Runtime.getRuntime().availableProcessors() + 1, 32));
 
     @Override
-    public void start(URI uri, Codec coedc, Handler handler) {
+    public void start(URI uri, Codec codec, Handler handler) {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(boss, worker)
-                    //指定所使用的nio传输channel
+            bootstrap.group(boss, workers)
                     .channel(NioServerSocketChannel.class)
-                    //指定要监听的地址
                     .localAddress(new InetSocketAddress(uri.getHost(), uri.getPort()))
-                    //添加handler
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            //协议编解码
-                            ch.pipeline().addLast(new NettyCodec(coedc.createInstance()));
-                            //具体逻辑处理
+                            ch.pipeline().addLast(new NettyCodec(codec.createIstance()));
                             ch.pipeline().addLast(new NettyHandler(handler));
                         }
                     });
+            //记得 bind() 绑定
             ChannelFuture future = bootstrap.bind().sync();
-            System.out.println("完成端口绑定和服务器启动");
         } catch (Exception e) {
             e.printStackTrace();
         }

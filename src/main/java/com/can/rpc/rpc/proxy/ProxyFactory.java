@@ -1,12 +1,19 @@
 package com.can.rpc.rpc.proxy;
 
+
 import com.can.rpc.rpc.Invoker;
+import com.can.rpc.rpc.Result;
 import com.can.rpc.rpc.RpcInvocation;
+import com.can.rpc.rpc.SyncResult;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+/**
+ * @author ccc
+ */
 public class ProxyFactory {
+
     public static Object getProxy(Invoker invoker, Class<?>[] interfaces) {
         return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces, new InvokerInvocationHandler(invoker));
     }
@@ -19,10 +26,9 @@ public class ProxyFactory {
             }
 
             @Override
-            public Object invoke(RpcInvocation rpcInvocation) throws Exception {
-                // 反射调用对象的方法
-                Method method = proxy.getClass().getMethod(rpcInvocation.getMethodName(), rpcInvocation.getParameterTypes());
-                return method.invoke(proxy, rpcInvocation.getArguments());
+            public Result invoke(RpcInvocation invocation) throws Exception {
+                Method method = proxy.getClass().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                return new SyncResult(method.invoke(proxy, invocation.getAgruments()));
             }
         };
     }

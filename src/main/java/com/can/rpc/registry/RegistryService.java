@@ -1,14 +1,24 @@
 package com.can.rpc.registry;
 
+import com.can.rpc.common.serviceloader.SPI;
+
 import java.net.URI;
 
+/**
+ * @author ccc
+ */
+@SPI("ZookeeperRegistry")
 public interface RegistryService {
-    //注册
-    public void register(URI uri);
 
-    //订阅指定服务
-    public void subscribe(String service, NotifyListener notifyListener);
+    void registry(URI uri);
 
-    //配置连接信息
-    public void init(URI address);
+    void unregistry(URI uri);
+
+    void subscribe(String name, NotifyListener listener);
+
+    void unsubscribe(String name, NotifyListener listener);
+
+    void init(URI address);
+
+
 }

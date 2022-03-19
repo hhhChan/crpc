@@ -1,18 +1,73 @@
 package com.can.rpc.rpc;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 保留一次调用相关的目的地、参数、每次都有唯一的ID
+ * @author ccc
  */
+//保留一次调用的信息
 public class RpcInvocation implements Serializable {
-    private static long serialVersionUID = -4355285085441097045L;
-    static AtomicLong SEQ = new AtomicLong();
+
+    private static final long serialVersionUID = -3960018924662656591L;
+
+    private static AtomicLong SEQ = new AtomicLong();
+
     private long id;
+
     private String serviceName;
+
     private String methodName;
+
+    private Class<?>[] parameterTypes;
+
+    private Object[] agruments;
+
+    private transient InvokeMode invokeMode;
+
+    private transient Class<?> returnType;
+
+    public InvokeMode getInvokeMode() {
+        return invokeMode;
+    }
+
+    public void setInvokeMode(InvokeMode invokeMode) {
+        this.invokeMode = invokeMode;
+    }
+
+    public Class<?> getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(Class<?> returnType) {
+        this.returnType = returnType;
+    }
+
+    public RpcInvocation() {
+        this.setId(incrementAndGet());
+    }
+
+    private final long incrementAndGet() {
+        long current, next;
+        do {
+            current = SEQ.get();
+            next = current >= 2147483647 ? 0 : current + 1;
+        } while (!SEQ.compareAndSet(current, next));
+
+        return next;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public static AtomicLong getSEQ() {
+        return SEQ;
+    }
+
+    public static void setSEQ(AtomicLong SEQ) {
+        RpcInvocation.SEQ = SEQ;
+    }
 
     public long getId() {
         return id;
@@ -46,41 +101,12 @@ public class RpcInvocation implements Serializable {
         this.parameterTypes = parameterTypes;
     }
 
-    public Object[] getArguments() {
-        return arguments;
+    public Object[] getAgruments() {
+        return agruments;
     }
 
-    public void setArguments(Object[] arguments) {
-        this.arguments = arguments;
+    public void setAgruments(Object[] agruments) {
+        this.agruments = agruments;
     }
 
-    private Class<?>[] parameterTypes;
-    private Object[] arguments;
-
-    public RpcInvocation() {
-        //初始化一个id
-        this.setId(incrementAndGet());
-    }
-
-    @Override
-    public String toString() {
-        return "RpcInvocation{" +
-                "id=" + id +
-                ", serviceName='" + serviceName + '\'' +
-                ", methodName='" + methodName + '\'' +
-                ", parameterTypes=" + Arrays.toString(parameterTypes) +
-                ", arguments=" + Arrays.toString(arguments) +
-                '}';
-    }
-
-    public final long incrementAndGet() {
-        long current;
-        long next;
-        do {
-            current = SEQ.get();
-            next = current >= 2147483647 ? 0 : current + 1;
-        } while (!SEQ.compareAndSet(current, next));
-
-        return next;
-    }
 }

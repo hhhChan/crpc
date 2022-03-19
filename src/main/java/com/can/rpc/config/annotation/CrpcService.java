@@ -7,12 +7,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+/**
+ * @author ccc
+ */
+@Target(value = ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Service
+@Service//可与@componentscan配合
 public @interface CrpcService {
-    /*
-     * 若多个接口，自己指定一个
-     */
-    Class<?>interfaceClass() default void.class;
+
+    Class<?> interfaceClass() default void.class;
+
+    String version() default "";
 }

@@ -6,21 +6,26 @@ import com.can.rpc.rpc.RpcInvocation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+/**
+ * @author ccc
+ */
 public class InvokerInvocationHandler implements InvocationHandler {
+
     private final Invoker invoker;
 
-    public InvokerInvocationHandler(Invoker handler) {
-        this.invoker = handler;
+    public InvokerInvocationHandler(Invoker invoker) {
+        this.invoker = invoker;
     }
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
         if (method.getDeclaringClass() == Object.class) {
-            return method.invoke(invoker, args);
+            return method.invoke(invoker, objects);
         }
+
         String methodName = method.getName();
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        // 不需要远程调用
-        if (parameterTypes.length == 0) {
+        Class<?>[] paramterTypes = method.getParameterTypes();
+        if (paramterTypes.length == 0) {
+            //直接本地调用
             if ("toString".equals(methodName)) {
                 return invoker.toString();
             } else if ("$destroy".equals(methodName)) {
@@ -28,15 +33,17 @@ public class InvokerInvocationHandler implements InvocationHandler {
             } else if ("hashCode".equals(methodName)) {
                 return invoker.hashCode();
             }
-        } else if (parameterTypes.length == 1 && "equals".equals(methodName)) {
-            return invoker.equals(args[0]);
+        } else if (paramterTypes.length == 1 && "equals".equals(methodName)) {
+            return invoker.equals(objects[0]);
         }
-//        method, invoker.getInterface().getName(), args;
+
         RpcInvocation rpcInvocation = new RpcInvocation();
         rpcInvocation.setMethodName(methodName);
-        rpcInvocation.setArguments(args);
-        rpcInvocation.setParameterTypes(parameterTypes);
+        rpcInvocation.setAgruments(objects);
+        //记得设置这个 不然会导致后面反射找不到方法
+        rpcInvocation.setParameterTypes(paramterTypes);
         rpcInvocation.setServiceName(method.getDeclaringClass().getName());
-        return invoker.invoke(rpcInvocation);
+        rpcInvocation.setReturnType(method.getReturnType());
+        return invoker.invoke(rpcInvocation).recreate();
     }
 }

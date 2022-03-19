@@ -2,12 +2,15 @@ package com.can.rpc.common.tools;
 
 import java.util.ServiceLoader;
 
+/**
+ * @author ccc
+ */
 public class SpiUtil {
-    public  static  Object getServiceImpl(String serviceName, Class classType) {
-        ServiceLoader services = ServiceLoader.load(classType, Thread.currentThread().getContextClassLoader());
 
-        for(Object s : services) {
-            if (s.getClass().getSimpleName().equals(serviceName)) {
+    public static Object getServiceImpl(String name, Class classType) {
+        ServiceLoader serviceLoader = ServiceLoader.load(classType, Thread.currentThread().getContextClassLoader());
+        for (Object s : serviceLoader) {
+            if (s.getClass().getSimpleName().equals(name)) {
                 return s;
             }
         }

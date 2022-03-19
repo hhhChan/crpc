@@ -1,11 +1,19 @@
 package com.can.rpc.config;
 
+/**
+ * @author ccc
+ */
 public class ProtocolConfig {
+
     private String name;
+
     private String port;
+
     private String host;
+
     private String serialization;
-    private String transporter; // 底层框架
+
+    private String transporter;
 
     public String getName() {
         return name;

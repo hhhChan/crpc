@@ -14,59 +14,56 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.lang.reflect.Field;
 
-/*
-    spring扫描 初始化对象后 查找CrpcService
+/**
+ * @author ccc
  */
-public class CRPCPostProcessor implements ApplicationContextAware, InstantiationAwareBeanPostProcessor {
-    ApplicationContext applicationContext;
+public class CrpcPostprocessor implements ApplicationContextAware, InstantiationAwareBeanPostProcessor {
+
+    private ApplicationContext applicationContext;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        //服务提供
-        if(bean.getClass().isAnnotationPresent(CrpcService.class)) {
-            System.out.println("找到了需要开放网络访问的service实现类，构建serviceConfig配置");
+        if (bean.getClass().isAnnotationPresent(CrpcService.class)) {
             ServiceConfig serviceConfig = new ServiceConfig();
-            serviceConfig.addProtocolConfig(applicationContext.getBean(ProtocolConfig.class));
+            serviceConfig.addProrocolConfig(applicationContext.getBean(ProtocolConfig.class));
             serviceConfig.addRegistryConfig(applicationContext.getBean(RegistryConfig.class));
             serviceConfig.setReference(bean);
 
             CrpcService crpcService = bean.getClass().getAnnotation(CrpcService.class);
-            if(void.class == crpcService.interfaceClass()) {
+            if (void.class == crpcService.interfaceClass()) {
                 serviceConfig.setService(bean.getClass().getInterfaces()[0]);
             } else {
                 serviceConfig.setService(crpcService.interfaceClass());
             }
-
             CrpcBootstrap.export(serviceConfig);
         }
 
-        // 2. 服务引用- 注入
+
         for (Field field : bean.getClass().getDeclaredFields()) {
             try {
                 if (!field.isAnnotationPresent(CrpcReference.class)) {
-                    continue; // 不继续下面的代码，继续循环
+                    continue;
                 }
-                // 引用相关 配置 保存在一个对象里边 // TODO 思考：如果一个引用需要在多个类被使用
                 ReferenceConfig referenceConfig = new ReferenceConfig();
+                referenceConfig.addProrocolConfig(applicationContext.getBean(ProtocolConfig.class));
                 referenceConfig.addRegistryConfig(applicationContext.getBean(RegistryConfig.class));
-                referenceConfig.addProtocolConfig(applicationContext.getBean(ProtocolConfig.class));
                 referenceConfig.setService(field.getType());
+                CrpcReference crpcReference = field.getAnnotation(CrpcReference.class);
+                referenceConfig.setLoadbalance(crpcReference.loadbalance());
 
-                CrpcReference cRpcReference = field.getAnnotation(CrpcReference.class);
-                referenceConfig.setLoadbalance(cRpcReference.loadbalance());
-
-                Object referenceBean = CrpcBootstrap.getReferenceBean(referenceConfig);
+                Object reference = CrpcBootstrap.getReferenceBean(referenceConfig);
                 field.setAccessible(true);
-                field.set(bean, referenceBean);
-            }catch (Exception e) {
+                field.set(bean, reference);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
         return bean;
     }
 }

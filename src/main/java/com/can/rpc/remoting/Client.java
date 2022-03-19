@@ -2,8 +2,12 @@ package com.can.rpc.remoting;
 
 import java.net.URI;
 
+/**
+ * @author ccc
+ */
 public interface Client {
-    void connecct(URI uri, Codec codec, Handler handler);
+
+    void connect(URI uri, Codec codec, Handler handler);
 
     CrpcChannel getChannel();
 }

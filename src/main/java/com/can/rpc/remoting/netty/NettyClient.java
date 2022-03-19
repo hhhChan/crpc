@@ -12,40 +12,42 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import sun.awt.geom.AreaOp;
 
-
+import java.net.InetSocketAddress;
 import java.net.URI;
 
+/**
+ * @author ccc
+ */
 public class NettyClient implements Client {
-    CrpcChannel channel = null;
-    EventLoopGroup group = null;
+
+    private CrpcChannel channel;
+
+    private EventLoopGroup group;
 
     @Override
-    public void connecct(URI uri, Codec codec, Handler handler) {
+    public void connect(URI uri, Codec codec, Handler handler) {
         try {
-            group = new NioEventLoopGroup();
+            group = new NioEventLoopGroup(Math.min(Runtime.getRuntime().availableProcessors() + 1, 32));
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group)
-                    //指定nio传输channel
                     .channel(NioSocketChannel.class)
-                    //添加handler
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new NettyCodec(codec.createInstance()));
+                            ch.pipeline().addLast(new NettyCodec(codec.createIstance()));
                             ch.pipeline().addLast(new NettyHandler(handler));
                         }
                     });
             //同步连接
-            ChannelFuture future = bootstrap.connect(uri.getHost(), uri.getPort()).sync();
+            ChannelFuture future = bootstrap.connect(new InetSocketAddress(uri.getHost(), uri.getPort())).sync();
             channel = new NettyChannel(future.channel());
 
-            //优雅停机
+            //优雅停机 -- kill pid -- 响应退出信号
             Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
                 public void run() {
                     try {
-                        System.out.println("我要停机了");
                         synchronized (NettyServer.class) {
                             group.shutdownGracefully().sync();
                         }
@@ -62,9 +64,5 @@ public class NettyClient implements Client {
     @Override
     public CrpcChannel getChannel() {
         return channel;
-    }
-
-    public void setChannel(CrpcChannel channel) {
-        this.channel = channel;
     }
 }

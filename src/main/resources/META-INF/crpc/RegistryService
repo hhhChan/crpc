@@ -1,0 +1,2 @@
+RedisRegistry=com.can.rpc.registry.redis.RedisRegistry
+ZookeeperRegistry=com.can.rpc.registry.zookeeper.ZookeeperRegistry

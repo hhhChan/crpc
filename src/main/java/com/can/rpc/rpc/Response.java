@@ -1,40 +1,62 @@
 package com.can.rpc.rpc;
 
+/**
+ * @author ccc
+ */
 public class Response {
-    private long requestId; //对应请求中携带的messageId
-    private int status; //99异常 200正常
-    private Object content; //响应内容 - 方法执行结果 异常信息
 
-    public int getStatus() {
-        return  status;
-    }
+    public static final byte SUCCESS = 20;
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+    public static final byte ERROR = 50;
 
-    public Object getContent() {
-        return content;
-    }
+    private long requsetId; //请求中的messageId
 
-    public void setContent(Object content) {
-        this.content = content;
-    }
+    private byte status; // 20 success
 
-    public long getRequestId() {
-        return requestId;
-    }
+    //todo 优化 成object类型 解决序列化LinkedHashMap
+    private SyncResult content; //响应内容
 
-    public void setRequestId(long requestId) {
-        this.requestId = requestId;
-    }
+    private String errInfo;
 
     @Override
     public String toString() {
         return "Response{" +
-                "requestId=" + requestId +
+                "requsetId=" + requsetId +
                 ", status=" + status +
                 ", content=" + content +
+                ", errInfo=" + errInfo +
                 '}';
+    }
+
+    public long getRequsetId() {
+        return requsetId;
+    }
+
+    public void setRequsetId(long requsetId) {
+        this.requsetId = requsetId;
+    }
+
+    public byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(byte status) {
+        this.status = status;
+    }
+
+    public SyncResult getContent() {
+        return content;
+    }
+
+    public void setContent(SyncResult content) {
+        this.content = content;
+    }
+
+    public String getErrInfo() {
+        return errInfo;
+    }
+
+    public void setErrInfo(String errInfo) {
+        this.errInfo = errInfo;
     }
 }

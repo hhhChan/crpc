@@ -3,7 +3,11 @@ package com.can.rpc.config;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author ccc
+ */
 public class ServiceConfig {
+
     private List<RegistryConfig> registryConfigs;
 
     private List<ProtocolConfig> protocolConfigs;
@@ -14,19 +18,18 @@ public class ServiceConfig {
 
     private String version;
 
-    public List<RegistryConfig> getRegistryConfigs() {
-        return registryConfigs;
-    }
-
-    public void setRegistryConfigs(List<RegistryConfig> registryConfigs) {
-        this.registryConfigs = registryConfigs;
+    public synchronized void addProrocolConfig(ProtocolConfig protocolConfig) {
+        if (protocolConfigs == null) {
+            protocolConfigs = new ArrayList<>();
+        }
+        protocolConfigs.add(protocolConfig);
     }
 
     public synchronized void addRegistryConfig(RegistryConfig registryConfig) {
         if (registryConfigs == null) {
-            registryConfigs = new ArrayList<RegistryConfig>();
+            registryConfigs = new ArrayList<>();
         }
-        this.registryConfigs.add(registryConfig);
+        registryConfigs.add(registryConfig);
     }
 
     public List<ProtocolConfig> getProtocolConfigs() {
@@ -35,13 +38,6 @@ public class ServiceConfig {
 
     public void setProtocolConfigs(List<ProtocolConfig> protocolConfigs) {
         this.protocolConfigs = protocolConfigs;
-    }
-
-    public synchronized void addProtocolConfig(ProtocolConfig protocolConfig) {
-        if (protocolConfigs == null) {
-            protocolConfigs = new ArrayList<ProtocolConfig>();
-        }
-        this.protocolConfigs.add(protocolConfig);
     }
 
     public Class getService() {
@@ -66,5 +62,13 @@ public class ServiceConfig {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public List<RegistryConfig> getRegistryConfigs() {
+        return registryConfigs;
+    }
+
+    public void setRegistryConfigs(List<RegistryConfig> registryConfigs) {
+        this.registryConfigs = registryConfigs;
     }
 }
