@@ -1,5 +1,6 @@
 package com.can.rpc.rpc.proxy;
 
+import com.can.rpc.rpc.AsyncContext;
 import com.can.rpc.rpc.Invoker;
 import com.can.rpc.rpc.RpcInvocation;
 
@@ -44,6 +45,8 @@ public class InvokerInvocationHandler implements InvocationHandler {
         rpcInvocation.setParameterTypes(paramterTypes);
         rpcInvocation.setServiceName(method.getDeclaringClass().getName());
         rpcInvocation.setReturnType(method.getReturnType());
+        rpcInvocation.setAsync(AsyncContext.async.get());
+        AsyncContext.async.set(Boolean.FALSE);
         return invoker.invoke(rpcInvocation).recreate();
     }
 }

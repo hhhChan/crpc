@@ -30,7 +30,7 @@ public abstract class AbstactInvoker implements Invoker {
             return new AsyncResult(future, invocation);
         }
 
-        if (InvokeMode.SYNC == invocation.getInvokeMode()) {
+        if (InvokeMode.SYNC == invocation.getInvokeMode() && !invocation.getAsync()) {
             try {
                 result.get(60, TimeUnit.SECONDS);
             } catch (Exception e) {

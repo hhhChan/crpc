@@ -78,10 +78,10 @@ public class AsyncResult implements Result{
 
     @Override
     public Object recreate() throws Throwable {
-        if (InvokeMode.ASYNC == invocation.getInvokeMode()) {
+        if (InvokeMode.ASYNC == invocation.getInvokeMode() || invocation.getAsync()) {
             return new FutureAdapter(syncFuture);
         }
-        return getSyncResult().getValue();
+        return getSyncResult().recreate();
     }
 
     public Result getSyncResult() {

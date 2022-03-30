@@ -23,6 +23,16 @@ public class RpcInvocation implements Serializable {
 
     private Object[] agruments;
 
+    private Boolean async;
+
+    public Boolean getAsync() {
+        return async;
+    }
+
+    public void setAsync(Boolean async) {
+        this.async = async;
+    }
+
     private transient InvokeMode invokeMode;
 
     private transient Class<?> returnType;

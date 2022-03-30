@@ -65,6 +65,9 @@ public class SyncResult implements Result{
 
     @Override
     public Object recreate() throws Throwable {
-        return null;
+        if (exception != null) {
+            throw exception;
+        }
+        return result;
     }
 }
