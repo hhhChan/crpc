@@ -1,16 +1,16 @@
 package com.can.rpc.remoting.netty;
 
+import com.can.rpc.common.tools.Constans;
 import com.can.rpc.remoting.Codec;
 import com.can.rpc.remoting.Handler;
 import com.can.rpc.remoting.Server;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -33,12 +33,13 @@ public class NettyServer implements Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new NettyCodec(codec.createIstance()));
-                            ch.pipeline().addLast(new NettyHandler(handler));
+                            ch.pipeline().addLast(new NettyCodec(codec.createIstance()))
+                                    .addLast(new IdleStateHandler(0, 0, Constans.HEARTBEAT_TIMEOUT))
+                                    .addLast(new NettyServerHandler(handler));
                         }
                     });
             //记得 bind() 绑定
-            ChannelFuture future = bootstrap.bind().sync();
+            bootstrap.bind().sync();
         } catch (Exception e) {
             e.printStackTrace();
         }

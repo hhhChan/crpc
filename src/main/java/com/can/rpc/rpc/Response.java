@@ -16,6 +16,8 @@ public class Response {
     //todo 优化 成object类型 解决序列化LinkedHashMap
     private SyncResult content; //响应内容
 
+    private boolean heartbeat;
+
     private String errInfo;
 
     @Override
@@ -24,6 +26,7 @@ public class Response {
                 "requsetId=" + requsetId +
                 ", status=" + status +
                 ", content=" + content +
+                ", heartbeat=" + heartbeat +
                 ", errInfo=" + errInfo +
                 '}';
     }
@@ -58,5 +61,13 @@ public class Response {
 
     public void setErrInfo(String errInfo) {
         this.errInfo = errInfo;
+    }
+
+    public boolean getHeartbeat() {
+        return heartbeat;
+    }
+
+    public void setHeartbeat(boolean heartbeat) {
+        this.heartbeat = heartbeat;
     }
 }

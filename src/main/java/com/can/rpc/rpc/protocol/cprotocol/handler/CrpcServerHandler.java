@@ -26,6 +26,13 @@ public class CrpcServerHandler implements Handler {
                 RpcInvocation invocation = (RpcInvocation) msg;
 
                 Response response = new Response();
+
+                if (invocation.getHeartbeat()) {
+                    response.setStatus(Response.SUCCESS);
+                    response.setHeartbeat(Boolean.TRUE);
+                    cprotocol.send(response);
+                    return;
+                }
                 try {
                     SyncResult result = (SyncResult) getInvoker().invoke(invocation);
                     response.setRequsetId(invocation.getId());

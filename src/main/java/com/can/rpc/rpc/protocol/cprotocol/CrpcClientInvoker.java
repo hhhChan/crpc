@@ -43,7 +43,7 @@ public class CrpcClientInvoker extends AbstactInvoker {
     protected Result doInvoke(RpcInvocation invocation) throws Throwable {
 //        byte[] requestBody = serialization.serialize(invocation);
 //        this.client.getChannel().send(requestBody);
-        byte[] requestBody = serialization.serialize(invocation);
+        //byte[] requestBody = serialization.serialize(invocation);
         this.client.getChannel().send(invocation);
         CompletableFuture<SyncResult> future = CrpcClientHandler.waitResult(invocation.getId())
                 .thenApply(obj -> (SyncResult) obj);

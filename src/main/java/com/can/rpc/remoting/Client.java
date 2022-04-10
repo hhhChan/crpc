@@ -7,7 +7,9 @@ import java.net.URI;
  */
 public interface Client {
 
-    void connect(URI uri, Codec codec, Handler handler);
+    void open(URI uri, Codec codec, Handler handler);
 
     CrpcChannel getChannel();
+
+    void connect();
 }

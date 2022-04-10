@@ -25,6 +25,8 @@ public class RpcInvocation implements Serializable {
 
     private Boolean async;
 
+    private boolean heartbeat;
+
     public Boolean getAsync() {
         return async;
     }
@@ -119,4 +121,11 @@ public class RpcInvocation implements Serializable {
         this.agruments = agruments;
     }
 
+    public boolean getHeartbeat() {
+        return heartbeat;
+    }
+
+    public void setHeartbeat(boolean heartbeat) {
+        this.heartbeat = heartbeat;
+    }
 }
