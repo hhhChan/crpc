@@ -43,6 +43,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         // send heartbeat when read idle.
         if (evt instanceof IdleStateEvent) {
             try {
+                logger.info("[userEventTriggered][发起一次心跳]");
                 sendHeartbeat(ctx.channel());
             } finally {
                 NettyChannel.removeChannelIfNoActive(ctx.channel());
@@ -66,11 +67,9 @@ public class NettyClientHandler extends ChannelDuplexHandler {
     private boolean needReconnect(NettyChannel ch) {
         Long lastRead = (Long) ch.getAttribute(KEY_READ_TIMESTAMP);
         Long now = now();
-        if (lastRead != null && now - lastRead > Constans.HEARTBEAT_TIMEOUT) {
+        if (lastRead != null && (now - lastRead) / 1000 > Constans.HEARTBEAT_TIMEOUT) {
             logger.warn("try to reconneted------------");
-            if (ch != null) {
-                ch.close();
-            }
+            ch.close();
             NettyChannel.removeChannelIfNoActive(ch.getChannel());
             client.connect();
             return true;
