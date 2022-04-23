@@ -5,6 +5,11 @@ import com.can.rpc.remoting.Handler;
 import com.can.rpc.remoting.netty.NettyChannel;
 import com.can.rpc.rpc.Response;
 import com.can.rpc.rpc.SyncResult;
+import com.can.rpc.rpc.context.TraceContext;
+import com.can.rpc.rpc.trace.CrpcTrace;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Transaction;
+import com.dianping.cat.message.spi.MessageTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +35,12 @@ public class CrpcClientHandler implements Handler {
     @Override
     public void onReceive(CrpcChannel cprotocol, Object msg) throws Exception {
         Response response = (Response) msg;
+        trace(response.getTrace());
+        Transaction transaction = Cat.newTransaction("CRPC-Comsummer", "async-over");
         CompletableFuture<Object> future = invokerMap.get(response.getRequsetId());
         if (response.getStatus() == Response.SUCCESS) {
-            if (response.getHeartbeat()) {
-                return;
-            }
             future.complete(response.getContent());
+            transaction.complete();
         } else {
             future.completeExceptionally(new Exception(response.getErrInfo()));
         }
@@ -45,5 +50,35 @@ public class CrpcClientHandler implements Handler {
     @Override
     public void onWrite(CrpcChannel cprotocol, Object msg) throws Exception {
 
+    }
+
+    public void trace(CrpcTrace crpcTrace) {
+        if (crpcTrace.getRootId() != null) {
+            String rootId = crpcTrace.getRootId ();
+            String childId = crpcTrace.getChildId ();
+            String parentId = crpcTrace.getParentId ();
+            MessageTree tree = Cat.getManager().getThreadLocalMessageTree();
+            tree.setParentMessageId(parentId);
+            tree.setRootMessageId(rootId);
+            tree.setMessageId(childId);
+            CrpcTrace currentTrace = new CrpcTrace ();
+            currentTrace.setParentId(childId);
+            currentTrace.setRootId(rootId);
+        } else {
+            MessageTree tree = Cat.getManager().getThreadLocalMessageTree();
+            String messageId = tree.getMessageId();
+            if (messageId == null) {
+                messageId = Cat.createMessageId();
+                tree.setMessageId(messageId);
+            }
+            String root = tree.getRootMessageId();
+
+            if (root == null) {
+                root = messageId;
+            }
+            CrpcTrace currentTrace = new CrpcTrace();
+            currentTrace.setParentId(messageId);
+            currentTrace.setRootId(root);
+        }
     }
 }

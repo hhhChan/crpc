@@ -1,5 +1,7 @@
 package com.can.rpc.rpc;
 
+import com.can.rpc.rpc.trace.CrpcTrace;
+
 /**
  * @author ccc
  */
@@ -19,6 +21,8 @@ public class Response {
     private boolean heartbeat;
 
     private String errInfo;
+
+    private CrpcTrace trace;
 
     @Override
     public String toString() {
@@ -69,5 +73,13 @@ public class Response {
 
     public void setHeartbeat(boolean heartbeat) {
         this.heartbeat = heartbeat;
+    }
+
+    public CrpcTrace getTrace() {
+        return trace;
+    }
+
+    public void setTrace(CrpcTrace trace) {
+        this.trace = trace;
     }
 }

@@ -1,5 +1,7 @@
 package com.can.rpc.rpc;
 
+import com.can.rpc.rpc.trace.CrpcTrace;
+
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,12 +29,33 @@ public class RpcInvocation implements Serializable {
 
     private boolean heartbeat;
 
+    private CrpcTrace trace;
+
+    public CrpcTrace getTrace() {
+        if (trace == null) {
+            return new CrpcTrace();
+        }
+        return trace;
+    }
+
+    public void setTrace(CrpcTrace trace) {
+        this.trace = trace;
+    }
+
     public Boolean getAsync() {
+        if (async == null) {
+            return Boolean.FALSE;
+        }
         return async;
     }
 
     public void setAsync(Boolean async) {
-        this.async = async;
+        if (async != null) {
+            this.async = async;
+        } else {
+            this.async = Boolean.FALSE;
+        }
+
     }
 
     private transient InvokeMode invokeMode;

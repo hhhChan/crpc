@@ -5,6 +5,9 @@ import com.can.rpc.remoting.Client;
 import com.can.rpc.rpc.*;
 import com.can.rpc.rpc.protocol.AbstactInvoker;
 import com.can.rpc.rpc.protocol.cprotocol.handler.CrpcClientHandler;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
+import com.dianping.cat.message.Transaction;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +18,14 @@ import java.util.concurrent.TimeUnit;
 public class CrpcClientInvoker extends AbstactInvoker {
 
     private Client client;
+
+    @Override
+    public String toString() {
+        return "CrpcClientInvoker{" +
+                "client=" + client +
+                ", serialization=" + serialization +
+                '}';
+    }
 
     private Serialization serialization;
 
@@ -44,9 +55,9 @@ public class CrpcClientInvoker extends AbstactInvoker {
 //        byte[] requestBody = serialization.serialize(invocation);
 //        this.client.getChannel().send(requestBody);
         //byte[] requestBody = serialization.serialize(invocation);
-        this.client.getChannel().send(invocation);
+            this.client.getChannel().send(invocation);
         CompletableFuture<SyncResult> future = CrpcClientHandler.waitResult(invocation.getId())
-                .thenApply(obj -> (SyncResult) obj);
+                    .thenApply(obj -> (SyncResult) obj);
         return new AsyncResult(future, invocation);
     }
 }

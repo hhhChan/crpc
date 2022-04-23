@@ -15,7 +15,7 @@ public class TestZookeeper {
 
     private static String zookssperAddress;
 
-    //@BeforeAll
+    @BeforeAll
     public static void setUp() throws Exception {
         zookssperAddress = "localhost:2181";
         curatorClient = CuratorFrameworkFactory.newClient("127.0.0.1:2181", new ExponentialBackoffRetry(1000, 3));

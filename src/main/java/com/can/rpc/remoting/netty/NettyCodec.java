@@ -25,15 +25,16 @@ public class NettyCodec extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf byteBuf = (ByteBuf) msg;
-        byte[] data = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(data);
-
-        List<Object> out = codec.decode(data);
-
-        for (Object o : out) {
-            ctx.fireChannelRead(o);
-        }
+        ctx.fireChannelRead(msg);
+//        ByteBuf byteBuf = (ByteBuf) msg;
+//        byte[] data = new byte[byteBuf.readableBytes()];
+//        byteBuf.readBytes(data);
+//
+//        List<Object> out = codec.decode(data);
+//
+//        for (Object o : out) {
+//            ctx.fireChannelRead(o);
+//        }
     }
 
     @Override

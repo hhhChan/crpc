@@ -59,59 +59,63 @@ public class CrpcCodec implements Codec {
     }
 
     @Override
-    public List<Object> decode(byte[] msg) throws Exception {
-        List<Object> out = new ArrayList<>();
-
-        ByteBuf buffer = Unpooled.buffer();
-        int tempSize = temptMsg.readableBytes();
-        if (tempSize > 0) {
-            buffer.writeBytes(temptMsg);
-            buffer.writeBytes(msg);
-        } else {
-            buffer.writeBytes(msg);
-        }
-
-        while (true) {
-            if (HEADER_LEN >= buffer.readableBytes()) {
-                temptMsg.clear();
-                temptMsg.writeBytes(buffer);
-                return out;
-            }
-
-            byte[] magic = new byte[2];
-            buffer.readBytes(magic);
-
-            while (true) {
-                if (magic[0] != MAGIC[0] || magic[1] != MAGIC[1]) {
-                    if (buffer.readableBytes() == 0) {
-                        temptMsg.clear();
-                        temptMsg.writeByte(magic[1]);
-                        return out;
-                    }
-                    magic[0] = magic[1];
-                    magic[1] = buffer.readByte();
-                } else {
-                    break;
-                }
-            }
-            byte[] lengthBytes = new byte[4];
-            buffer.readBytes(lengthBytes);
-            int length = ByteUtil.bytes2Int_BE(lengthBytes);
-
-            if (buffer.readableBytes() < length) {
-                temptMsg.clear();
-                temptMsg.writeBytes(MAGIC);
-                temptMsg.writeBytes(lengthBytes);
-                temptMsg.writeBytes(buffer);
-                return out;
-            }
-
-            byte[] body = new byte[length];
-            //这里是读
-            buffer.readBytes(body);
-            Object o = this.getSerialization().deserialize(body, decodeType);
-            out.add(o);
-        }
+    public Object decode(byte[] msg) throws Exception {
+        return this.getSerialization().deserialize(msg, decodeType);
+//        List<Object> out = new ArrayList<>();
+//
+//        ByteBuf buffer = Unpooled.buffer();
+//        int tempSize = temptMsg.readableBytes();
+//        if (tempSize > 0) {
+//            buffer.writeBytes(temptMsg);
+//            buffer.writeBytes(msg);
+//        } else {
+//            buffer.writeBytes(msg);
+//        }
+//
+//        while (true) {
+//            if (HEADER_LEN >= buffer.readableBytes()) {
+//                temptMsg.clear();
+//                temptMsg.writeBytes(buffer);
+//                buffer.release();
+//                return out;
+//            }
+//
+//            byte[] magic = new byte[2];
+//            buffer.readBytes(magic);
+//
+//            while (true) {
+//                if (magic[0] != MAGIC[0] || magic[1] != MAGIC[1]) {
+//                    if (buffer.readableBytes() == 0) {
+//                        temptMsg.clear();
+//                        temptMsg.writeByte(magic[1]);
+//                        buffer.release();
+//                        return out;
+//                    }
+//                    magic[0] = magic[1];
+//                    magic[1] = buffer.readByte();
+//                } else {
+//                    break;
+//                }
+//            }
+//            byte[] lengthBytes = new byte[4];
+//            buffer.readBytes(lengthBytes);
+//            int length = ByteUtil.bytes2Int_BE(lengthBytes);
+//
+//            if (buffer.readableBytes() < length) {
+//                temptMsg.clear();
+//                temptMsg.writeBytes(MAGIC);
+//                temptMsg.writeBytes(lengthBytes);
+//                temptMsg.writeBytes(buffer);
+//                buffer.release();
+//                return out;
+//            }
+//
+//            byte[] body = new byte[length];
+//            //这里是读
+//            buffer.readBytes(body);
+//            Object o = this.getSerialization().deserialize(body, decodeType);
+//            out.add(o);
+//        }
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.net.URI;
 /**
  * @author ccc
  */
-@SPI("ZookeeperRegistry")
+@SPI("RedisRegistry")
 public interface RegistryService {
 
     void registry(URI uri);

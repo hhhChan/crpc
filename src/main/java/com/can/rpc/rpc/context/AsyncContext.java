@@ -1,5 +1,6 @@
-package com.can.rpc.rpc;
+package com.can.rpc.rpc.context;
 
+import com.can.rpc.rpc.SyncResult;
 import com.can.rpc.rpc.protocol.cprotocol.FutureAdapter;
 import io.netty.util.internal.InternalThreadLocalMap;
 
@@ -17,10 +18,6 @@ public class AsyncContext {
 
     public static ThreadLocal<CompletableFuture<SyncResult>> asyncFuture = new ThreadLocal<>();
 
-    static {
-        async.set(Boolean.FALSE);
-    }
-
     public static void setAsyncFuture(CompletableFuture<SyncResult> future) {
         asyncFuture.set(future);
     }
@@ -33,7 +30,7 @@ public class AsyncContext {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            async.set(Boolean.FALSE);
+            async.remove();
         }
         return new FutureAdapter(asyncFuture.get());
     }

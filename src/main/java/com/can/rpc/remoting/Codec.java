@@ -10,7 +10,7 @@ public interface Codec {
 
     byte[] encode(Object msg) throws Exception;
 
-    List<Object> decode(byte[] msg) throws Exception;
+    Object decode(byte[] msg) throws Exception;
 
     Codec createIstance();
 }

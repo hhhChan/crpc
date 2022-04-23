@@ -1,10 +1,9 @@
 package com.can.rpc.rpc;
 
+import com.can.rpc.rpc.context.AsyncContext;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * @author ccc
@@ -30,6 +29,5 @@ public class TestAsyncContest {
             e.printStackTrace();
         }
         System.out.println("1-" + AsyncContext.async.get());
-        System.in.read();
     }
 }

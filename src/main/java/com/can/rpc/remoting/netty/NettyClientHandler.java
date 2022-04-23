@@ -3,6 +3,7 @@ package com.can.rpc.remoting.netty;
 import com.can.rpc.common.tools.Constans;
 import com.can.rpc.remoting.Client;
 import com.can.rpc.remoting.Handler;
+import com.can.rpc.rpc.Response;
 import com.can.rpc.rpc.RpcInvocation;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -32,10 +33,24 @@ public class NettyClientHandler extends ChannelDuplexHandler {
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // 发起重连
+        client.reconnect();
+        // 继续触发事件
+        super.channelInactive(ctx);
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel());
         channel.setAttribute(KEY_READ_TIMESTAMP, now());
-        handler.onReceive(channel, msg);
+        Response response = (Response) msg;
+        if (response.getStatus() == Response.SUCCESS) {
+            if (response.getHeartbeat()) {
+                return;
+            }
+        }
+        handler.onReceive(channel, response);
     }
 
     @Override
@@ -71,7 +86,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
             logger.warn("try to reconneted------------");
             ch.close();
             NettyChannel.removeChannelIfNoActive(ch.getChannel());
-            client.connect();
+            client.reconnect();
             return true;
         }
         return false;

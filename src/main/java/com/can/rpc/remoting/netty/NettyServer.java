@@ -4,6 +4,7 @@ import com.can.rpc.common.tools.Constans;
 import com.can.rpc.remoting.Codec;
 import com.can.rpc.remoting.Handler;
 import com.can.rpc.remoting.Server;
+import com.can.rpc.rpc.protocol.cprotocol.codec.CrpcDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -33,7 +34,8 @@ public class NettyServer implements Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new NettyCodec(codec.createIstance()))
+                            ch.pipeline().addLast(new CrpcDecoder(codec.createIstance()))
+                                    .addLast(new NettyCodec(codec.createIstance()))
                                     .addLast(new IdleStateHandler(0, 0, Constans.HEARTBEAT_TIMEOUT))
                                     .addLast(new NettyServerHandler(handler));
                         }

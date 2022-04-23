@@ -1,6 +1,6 @@
 package com.can.rpc.rpc.proxy;
 
-import com.can.rpc.rpc.AsyncContext;
+import com.can.rpc.rpc.context.AsyncContext;
 import com.can.rpc.rpc.Invoker;
 import com.can.rpc.rpc.RpcInvocation;
 
@@ -17,6 +17,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
     public InvokerInvocationHandler(Invoker invoker) {
         this.invoker = invoker;
     }
+
     @Override
     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
         if (method.getDeclaringClass() == Object.class) {

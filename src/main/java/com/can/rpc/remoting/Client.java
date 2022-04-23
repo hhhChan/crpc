@@ -12,4 +12,6 @@ public interface Client {
     CrpcChannel getChannel();
 
     void connect();
+
+    void reconnect();
 }
