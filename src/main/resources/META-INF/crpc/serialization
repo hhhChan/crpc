@@ -1,1 +1,2 @@
 JsonSerialization=com.can.rpc.common.serialize.json.JsonSerialization
+ProtobufSerialization=com.can.rpc.common.serialize.protobuf.ProtobufSerialization

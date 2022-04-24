@@ -1,1 +1,2 @@
 RamdomLoadBalance=com.can.rpc.rpc.cluster.loadbalance.RamdomLoadBalance
+RoundRobinLoadBalance=com.can.rpc.rpc.cluster.loadbalance.RoundRobinLoadBalance

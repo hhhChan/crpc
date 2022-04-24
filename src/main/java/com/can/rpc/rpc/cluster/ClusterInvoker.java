@@ -9,6 +9,7 @@ import com.can.rpc.registry.RegistryService;
 import com.can.rpc.rpc.Invoker;
 import com.can.rpc.rpc.Result;
 import com.can.rpc.rpc.RpcInvocation;
+import com.can.rpc.rpc.context.CrpcContext;
 import com.can.rpc.rpc.protocol.Protocol;
 
 import java.net.URI;
@@ -27,6 +28,7 @@ public class ClusterInvoker implements Invoker {
     //代表这个服务能够调用的所有实例
     private Map<URI, Invoker> invokerMap = new ConcurrentHashMap<>();
     private LoadBalance loadBalance;
+    private static Invoker stickInvoker;
 
     public ClusterInvoker(ReferenceConfig referenceConfig) throws Exception {
         this.referenceConfig = referenceConfig;
@@ -71,6 +73,14 @@ public class ClusterInvoker implements Invoker {
 
     @Override
     public Result invoke(RpcInvocation invocation) throws Exception {
+        if (CrpcContext.isStick()) {
+            if (stickInvoker != null) {
+                return stickInvoker.invoke(invocation);
+            } else {
+                stickInvoker = loadBalance.select(invokerMap);
+                return stickInvoker.invoke(invocation);
+            }
+        }
         Invoker invoker = loadBalance.select(invokerMap);
         return invoker.invoke(invocation);
     }

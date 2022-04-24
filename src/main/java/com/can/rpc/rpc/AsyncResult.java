@@ -1,6 +1,6 @@
 package com.can.rpc.rpc;
 
-import com.can.rpc.rpc.context.AsyncContext;
+import com.can.rpc.rpc.context.CrpcContext;
 import com.can.rpc.rpc.protocol.cprotocol.FutureAdapter;
 
 import java.util.concurrent.CompletableFuture;
@@ -82,7 +82,7 @@ public class AsyncResult implements Result{
         if (InvokeMode.ASYNC == invocation.getInvokeMode()) {
             return new FutureAdapter(syncFuture);
         } else if (invocation.getAsync()) {
-            AsyncContext.setAsyncFuture(syncFuture);
+            CrpcContext.setAsyncFuture(syncFuture);
             return null;
         }
         return getSyncResult().recreate();

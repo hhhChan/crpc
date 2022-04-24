@@ -126,7 +126,6 @@ public class RedisRegistry implements RegistryService {
                         @Override
                         public void onPSubscribe(String channel, int subscribedChannels) {
                             //todo 后续实现注册到注册中心
-                            System.out.println("注册到注册中心---待实现");
                         }
                     };
                     Jedis jedis = new Jedis(address.getHost(), address.getPort());

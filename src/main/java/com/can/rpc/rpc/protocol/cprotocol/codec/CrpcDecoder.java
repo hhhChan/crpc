@@ -53,7 +53,7 @@ public class CrpcDecoder extends ByteToMessageDecoder {
             byte[] content = new byte[length];
             in.readBytes(content);
 
-            out.add ( codec.decode(content) );
+            out.add(codec.decode(content));
         } catch (Exception e) {
             e.printStackTrace();
         }

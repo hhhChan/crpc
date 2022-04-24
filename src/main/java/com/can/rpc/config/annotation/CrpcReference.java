@@ -15,4 +15,6 @@ public @interface CrpcReference {
     String loadbalance() default "RamdomLoadBalance";
 
     String version() default "";
+
+    String stick() default "";
 }

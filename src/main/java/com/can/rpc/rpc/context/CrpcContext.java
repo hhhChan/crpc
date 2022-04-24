@@ -12,7 +12,9 @@ import java.util.concurrent.FutureTask;
 /**
  * @author ccc
  */
-public class AsyncContext {
+public class CrpcContext {
+
+    private static boolean stick = false;
 
     public static ThreadLocal<Boolean> async = new ThreadLocal<>();
 
@@ -33,5 +35,13 @@ public class AsyncContext {
             async.remove();
         }
         return new FutureAdapter(asyncFuture.get());
+    }
+
+    public static boolean isStick() {
+        return stick;
+    }
+
+    public static void setStick(boolean stick) {
+        CrpcContext.stick = stick;
     }
 }

@@ -1,0 +1,22 @@
+syntax = "proto3";
+  
+option java_outer_classname="CRpcInvocation";
+
+message RpcInvocation {
+  optional int64 id = 1;
+  optional string serviceName = 2;
+  optional string methodName = 3;
+ 
+  repeated string types = 4;  
+  repeated bytes agrs =5;
+
+  optional bool async = 6;
+  optional bool heartbeat = 7;
+
+  message Trace{
+    optional string rootId = 1;
+    optional string parentId = 2;
+    optional string childId = 3;
+  }  
+  optional Trace trace = 8;
+}

@@ -44,7 +44,7 @@ public class CrpcServerHandler implements Handler {
                     response.setStatus(Response.SUCCESS);
                     response.setContent(result);
                     response.setTrace(TraceContext.get());
-                    if (CompletableFuture.class.isAssignableFrom(invocation.getReturnType())) {
+                    if (invocation.getReturnType() != null && CompletableFuture.class.isAssignableFrom(invocation.getReturnType())) {
                         result.set(((CompletableFuture)result.getValue()).get());
                         response.setContent(result);
                     }

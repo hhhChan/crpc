@@ -7,6 +7,7 @@ import com.can.rpc.config.ServiceConfig;
 import com.can.rpc.config.annotation.CrpcReference;
 import com.can.rpc.config.annotation.CrpcService;
 import com.can.rpc.config.util.CrpcBootstrap;
+import com.can.rpc.rpc.context.CrpcContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -56,7 +57,9 @@ public class CrpcPostprocessor implements ApplicationContextAware, Instantiation
                 referenceConfig.setService(field.getType());
                 CrpcReference crpcReference = field.getAnnotation(CrpcReference.class);
                 referenceConfig.setLoadbalance(crpcReference.loadbalance());
-
+                if ("true".equals(crpcReference.stick())) {
+                    CrpcContext.setStick(true);
+                }
                 Object reference = CrpcBootstrap.getReferenceBean(referenceConfig);
                 field.setAccessible(true);
                 field.set(bean, reference);
