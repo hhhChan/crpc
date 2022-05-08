@@ -15,9 +15,9 @@ public class RoundRobinLoadBalance implements LoadBalance {
 
     private static volatile AtomicInteger integer = new AtomicInteger(0);
     @Override
-    public Invoker select(Map<URI, Invoker> invokerMap) {
+    public Invoker select(Map<URI, Invoker> invokerMap) throws Exception {
         if (invokerMap.values().size() == 0) {
-            return null;
+            throw new Exception("not found service");
         }
         int current = integer.getAndIncrement();
         if (current >= Integer.MAX_VALUE) {

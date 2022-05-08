@@ -2,6 +2,7 @@ package com.can.rpc.rpc.cluster;
 
 import com.can.rpc.common.serviceloader.CrpcServiceDirectory;
 import com.can.rpc.common.tools.SpiUtil;
+import com.can.rpc.common.tools.URIUtil;
 import com.can.rpc.config.ReferenceConfig;
 import com.can.rpc.config.RegistryConfig;
 import com.can.rpc.registry.NotifyListener;
@@ -73,15 +74,29 @@ public class ClusterInvoker implements Invoker {
 
     @Override
     public Result invoke(RpcInvocation invocation) throws Exception {
+        Map<URI, Invoker> versionMap = filterVersion(invokerMap);
         if (CrpcContext.isStick()) {
             if (stickInvoker != null) {
                 return stickInvoker.invoke(invocation);
             } else {
-                stickInvoker = loadBalance.select(invokerMap);
+                stickInvoker = loadBalance.select(versionMap);
                 return stickInvoker.invoke(invocation);
             }
         }
-        Invoker invoker = loadBalance.select(invokerMap);
+        Invoker invoker = loadBalance.select(versionMap);
         return invoker.invoke(invocation);
+    }
+
+    private Map<URI, Invoker> filterVersion( Map<URI, Invoker> invokerMap) {
+        if (referenceConfig.getVersion() != null && referenceConfig.getVersion() != "") {
+            Map<URI, Invoker> versionMap = new ConcurrentHashMap<>();
+            for (Map.Entry<URI, Invoker> entry : invokerMap.entrySet()) {
+                if (URIUtil.getParamter(entry.getKey(), "version", "").equals(referenceConfig.getVersion())) {
+                    versionMap.put(entry.getKey(), entry.getValue());
+                }
+            }
+            return versionMap;
+        }
+        return invokerMap;
     }
 }

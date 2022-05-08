@@ -37,7 +37,8 @@ public class CrpcBootstrap {
                         .append("?")
                         .append("transporter=").append(protocolConfig.getTransporter())
                         .append("&serialization=").append(protocolConfig.getSerialization())
-                        .append("&serviceName=").append(serviceConfig.getService().getName());
+                        .append("&serviceName=").append(serviceConfig.getService().getName())
+                        .append("&version=").append(serviceConfig.getVersion());
 
                 URI uri = new URI(sb.toString());
                 Protocol protocol = CrpcServiceDirectory.getServiceLoader(Protocol.class).getService(protocolConfig.getName());

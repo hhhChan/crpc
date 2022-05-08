@@ -37,6 +37,7 @@ public class CrpcPostprocessor implements ApplicationContextAware, Instantiation
             serviceConfig.setReference(bean);
 
             CrpcService crpcService = bean.getClass().getAnnotation(CrpcService.class);
+            serviceConfig.setVersion(crpcService.version());
             if (void.class == crpcService.interfaceClass()) {
                 serviceConfig.setService(bean.getClass().getInterfaces()[0]);
             } else {
@@ -57,6 +58,7 @@ public class CrpcPostprocessor implements ApplicationContextAware, Instantiation
                 referenceConfig.setService(field.getType());
                 CrpcReference crpcReference = field.getAnnotation(CrpcReference.class);
                 referenceConfig.setLoadbalance(crpcReference.loadbalance());
+                referenceConfig.setVersion(crpcReference.version());
                 if ("true".equals(crpcReference.stick())) {
                     CrpcContext.setStick(true);
                 }

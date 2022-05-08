@@ -10,5 +10,5 @@ import java.util.Map;
  */
 public interface LoadBalance {
 
-    public Invoker select(Map<URI, Invoker> invokerMap);
+    public Invoker select(Map<URI, Invoker> invokerMap) throws Exception;
 }

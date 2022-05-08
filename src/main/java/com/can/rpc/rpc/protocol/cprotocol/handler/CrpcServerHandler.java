@@ -10,6 +10,7 @@ import com.dianping.cat.Cat;
 import com.dianping.cat.message.Transaction;
 import com.dianping.cat.message.spi.MessageTree;
 
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.*;
 
 /**
@@ -37,7 +38,7 @@ public class CrpcServerHandler implements Handler {
                     cprotocol.send(response);
                     return;
                 }
-                Transaction transaction = Cat.newTransaction("CRPC-Service", invocation.getServiceName().concat(".").concat(invocation.getMethodName()));
+                Transaction transaction = Cat.newTransaction("CRPC-Service", ManagementFactory.getRuntimeMXBean().getName() + " - " + invocation.getServiceName().concat(".").concat(invocation.getMethodName()));
                 try {
                     SyncResult result = (SyncResult) getInvoker().invoke(invocation);
                     response.setRequsetId(invocation.getId());
